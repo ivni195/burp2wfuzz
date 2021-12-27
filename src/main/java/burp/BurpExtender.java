@@ -5,6 +5,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,10 +41,11 @@ public class BurpExtender implements IBurpExtender, IContextMenuFactory {
 
     private String createWfuzzCommand(IContextMenuInvocation invocation){
         var request = invocation.getSelectedMessages()[0].getRequest();
+        var service = invocation.getSelectedMessages()[0].getHttpService();
 
-        String host = invocation.getSelectedMessages()[0].getHttpService().toString();
+        IRequestInfo requestInfo = helpers.analyzeRequest(service, request);
 
-        IRequestInfo requestInfo = helpers.analyzeRequest(request);
+        String url = requestInfo.getUrl().toString();
 
         StringBuilder commandBuilder = new StringBuilder();
         commandBuilder.append("wfuzz ");
@@ -62,8 +64,8 @@ public class BurpExtender implements IBurpExtender, IContextMenuFactory {
             commandBuilder.append(String.format(" -d '%s' ", body));
         }
 
-        commandBuilder.append("-c -z payload ");
-        commandBuilder.append(host);
+        commandBuilder.append("-c -w wordlist ");
+        commandBuilder.append(url);
 
         return commandBuilder.toString();
     }
