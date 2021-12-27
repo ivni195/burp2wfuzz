@@ -64,7 +64,7 @@ public class BurpExtender implements IBurpExtender, IContextMenuFactory {
             commandBuilder.append(String.format(" -d '%s' ", body));
         }
 
-        commandBuilder.append("-c -w wordlist ");
+        commandBuilder.append(" -c -w wordlist ");
         commandBuilder.append(url);
 
         return commandBuilder.toString();
